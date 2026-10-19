@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Document Pi-hole v6 Application Password creation, Secret Service setup, HTTPS/private-CA use, ONLINE verification and AUTH REQUIRED troubleshooting.
+
 ## [0.2.0] - 2026-10-07
 
 - Add an in-panel Pi-hole address editor that saves through Omarchy's widget-settings API.
