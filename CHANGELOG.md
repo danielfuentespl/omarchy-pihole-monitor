@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Document Pi-hole v6 Application Password creation, Secret Service setup, HTTPS/private-CA use, ONLINE verification and AUTH REQUIRED troubleshooting.
+
 ## [0.1.0] - 2026-10-04
 
 ### Security and robustness

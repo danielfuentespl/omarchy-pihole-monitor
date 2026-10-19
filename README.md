@@ -72,7 +72,14 @@ cd ~/.config/omarchy/plugins/com.blogvirtualizado.omaops.pihole
 ./scripts/store-secret
 ```
 
-The helper prompts without echo and sends the value to Secret Service on stdin. It contains no password itself. Choose another keyring entry with `./scripts/store-secret secondary` and set the widget's **Secret ID** to the same value. Use HTTPS for authenticated Pi-hole instances. The password is not in plugin settings, `manifest.json`, argv, environment variables or plugin files. Secret Service persists it in the user's keyring until that entry is removed. JavaScript/Qt strings are released after use; cryptographic memory erasure is not promised.
+#### Create and store an Application Password
+
+1. In the Pi-hole v6 admin interface, open **Settings → Web Interface - API Settings**. Switch to **Expert** settings if needed, then choose **Configure app password** and enable a new password. Pi-hole shows the generated value only once; copy it before closing the dialog. Replacing an existing app password logs out applications using the old one. See Pi-hole's [API authentication guide](https://docs.pi-hole.net/api/auth/) and the official [Web Interface - API Settings page](https://github.com/pi-hole/web/blob/master/settings-api.lp).
+2. From the installed plugin directory, run `./scripts/store-secret`. The helper prompts without echo and passes the value to Secret Service through stdin; it does not put the password in shell history, command arguments, environment variables, or plugin settings.
+3. The default Secret ID is `default`, so no widget change is needed when using the command above. To store a separate entry, pass its ID, for example `./scripts/store-secret secondary`, then set the widget's **Secret ID** to `secondary` as well.
+4. Set the Pi-hole base URL to its canonical `https://` origin and refresh the panel. A successful API refresh shows **ONLINE**; if DNS blocking is disabled, the panel instead reports **BLOCKING DISABLED** while still displaying the connection state.
+
+For HTTPS with a private CA, use the existing [HTTPS and custom CA instructions](#http-and-https): set **Custom CA certificate file** to the absolute path of a PEM CA bundle. Certificate verification remains enabled. Secret Service keeps the password in the user's keyring until the entry is removed. JavaScript/Qt strings are released after use; cryptographic memory erasure is not promised.
 
 OmaPiHole Monitor NEVER follows HTTP redirects for API requests that could contain credentials. Any 3xx response fails with “Redirect refused. Configure the canonical Pi-hole URL.” Configure the canonical Pi-hole origin directly. Pi-hole Application Password is distinct from reverse-proxy Basic Auth; proxy Basic Auth is not supported in v0.1.0.
 
@@ -100,7 +107,7 @@ Removing the plugin does **not** automatically remove the Application Password f
 ## Troubleshooting
 
 - **NOT CONFIGURED:** supply an origin in the accepted format, without `/admin` or `/api`.
-- **AUTH REQUIRED:** check the Application Password, Secret ID and unlocked keyring. Credentials require HTTPS.
+- **AUTH REQUIRED:** verify that the Application Password is current, that the widget's **Secret ID** matches the ID passed to `store-secret`, and that the Secret Service keyring is available and unlocked. If you replaced or revoked the app password in Pi-hole, store the new value. Credentials are intentionally not retrieved or sent over HTTP; use the canonical HTTPS origin. A private-CA verification problem is a TLS error rather than an authentication failure, so also check **Custom CA certificate file** and the certificate hostname.
 - **curl is required:** install curl; OmaPiHole Monitor does not install dependencies automatically.
 - **secret-tool is required:** install `libsecret` and ensure Secret Service is running in the user session.
 - **OFFLINE:** check DNS, routing and Pi-hole availability. Common curl DNS, connection, timeout and certificate-verification failures are distinguished.
